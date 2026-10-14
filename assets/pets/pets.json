@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "name": "肥嘟嘟",
+  "canvas": {
+    "width": 1263,
+    "height": 1246,
+    "viewBox": "0 0 1263 1246",
+    "background": "transparent",
+    "preserveAspectRatio": "xMidYMid meet"
+  },
+  "defaultIdle": "sitting",
+  "thinking": {
+    "svg": "kangaroo-thinking.svg",
+    "frames": ["kangaroo-thinking-question.png", "kangaroo-thinking-plain.png"],
+    "cycleMs": 2000,
+    "frameDurationsMs": [1000, 1000]
+  },
+  "hover": {
+    "label": "工具栏悬停",
+    "svg": "kangaroo-hover.svg",
+    "png": "kangaroo-hover.png",
+    "firstFrameSource": "kangaroo-idle-sitting-open.png",
+    "frames": ["kangaroo-hover-1.png", "kangaroo-hover-2.png", "kangaroo-hover-3.png", "kangaroo-hover-4.png", "kangaroo-hover-5.png", "kangaroo-hover-6.png"],
+    "cycleMs": 1400,
+    "frameDurationsMs": [180, 180, 180, 240, 300, 320],
+    "target": "quickChatToolbar",
+    "enterEvent": "pointerenter",
+    "leaveEvent": "pointerleave",
+    "restorePreviousState": true
+  },
+  "idleOptions": [
+    {
+      "id": "sitting",
+      "label": "坐姿",
+      "svg": "kangaroo-idle-sitting.svg",
+      "frames": ["kangaroo-idle-sitting-open.png", "kangaroo-idle-sitting-closed.png"],
+      "cycleMs": 800,
+      "frameDurationsMs": [600, 200]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "ok": true,
+  "file": "spritesheet.png",
+  "encoded_bytes": 772914,
+  "sha256": "50f1e2f0724c2db359b982ecc32f5bc0e4fe99f6fd61d20a06c9d755773f9e8e",
+  "format": "PNG",
+  "mode": "RGBA",
+  "width": 1536,
+  "height": 2288,
+  "sprite_version_number": 2,
+  "frames_per_row": [
+    6,
+    8,
+    8,
+    4,
+    5,
+    8,
+    6,
+    6,
+    6,
+    8,
+    8
+  ],
+  "required_frames": 73,
+  "transparent_rgb_residue_pixels": 0,
+  "errors": [],
+  "warnings": [],
+  "scope": "结构验证；视觉重心与尺寸另由 test_hover_alignment.py 检查；不覆盖方向及动作语义"
+}

@@ -1,0 +1,17 @@
+node_modules/
+runtime/
+dist/
+.venv/
+__pycache__/
+*.pyc
+*.lnk
+.env
+.env.*
+task_plan.md
+findings.md
+progress.md
+docs/plans/
+native-pets/首次拖动排查.md
+tools/diagnose-native-layout.cjs
+tools/native-layout-patch.cjs
+tests/native-layout-patch.test.cjs

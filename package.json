@@ -1,0 +1,18 @@
+{
+  "name": "codex-pet-feidudu",
+  "version": "1.0.0",
+  "description": "肥嘟嘟：坐姿待机、托腮思考、起身挥手的黄色袋鼠 Codex 宠物",
+  "private": true,
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node tools/build-native-pets.cjs && python tools/validate-spritesheet.py",
+    "validate": "python tools/validate-spritesheet.py",
+    "install-pet": "node tools/install-native-pets.cjs",
+    "test": "node --test tests/pet-controller.test.cjs tests/session-tracker.test.cjs tests/native-position.test.cjs tests/native-install.test.cjs",
+    "test:images": "python tests/test_native_alignment.py && python tests/test_hover_alignment.py",
+    "preview": "python tools/export-previews.py",
+    "pack": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/package-release.ps1"
+  },
+  "devDependencies": { "playwright": "1.62.1" }
+}
