@@ -1,0 +1,35 @@
+name: Publish source archive
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create source ZIP and upload to existing draft
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./package.json').version")
+          mkdir -p dist
+          git archive --format=zip --prefix="feidudu-v${version}/" --output="dist/feidudu-source-v${version}.zip" HEAD
+          gh release download "v${version}" --pattern "feidudu-native-v${version}.zip" --dir dist
+          python - <<'PY'
+          import zipfile
+          from pathlib import Path
+          for path in Path('dist').glob('*.zip'):
+              with zipfile.ZipFile(path) as z:
+                  assert z.testzip() is None, str(path)
+                  assert not any('/runtime/' in p or '/node_modules/' in p for p in z.namelist())
+          PY
+          (cd dist && sha256sum "feidudu-native-v${version}.zip" "feidudu-source-v${version}.zip" > SHA256SUMS.txt)
+          gh release upload "v${version}" "dist/feidudu-source-v${version}.zip" --clobber
+          gh release upload "v${version}" dist/SHA256SUMS.txt --clobber
+          cat dist/SHA256SUMS.txt
