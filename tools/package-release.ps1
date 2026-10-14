@@ -2,10 +2,17 @@
 $projectRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 Set-Location -LiteralPath $projectRoot
 $version = (Get-Content -LiteralPath 'package.json' -Raw | ConvertFrom-Json).version
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+function Get-ReleaseHash([string]$targetFile) {
+    $stream = [System.IO.File]::OpenRead($targetFile)
+    $hasher = [System.Security.Cryptography.SHA256]::Create()
+    try { return [BitConverter]::ToString($hasher.ComputeHash($stream)).Replace('-', '').ToLowerInvariant() }
+    finally { $hasher.Dispose(); $stream.Dispose() }
+}
 if (-not [string]::IsNullOrWhiteSpace((& git status --porcelain | Out-String))) { throw '请先提交源码，确保打包对应已提交版本。' }
 $source = Join-Path $projectRoot 'native-pets\feidudu'
 $report = Get-Content -LiteralPath (Join-Path $source 'validation.json') -Raw | ConvertFrom-Json
-$digest = (Get-FileHash -LiteralPath (Join-Path $source 'spritesheet.png') -Algorithm SHA256).Hash.ToLowerInvariant()
+$digest = Get-ReleaseHash (Join-Path $source 'spritesheet.png')
 if (-not $report.ok -or $digest -ne $report.sha256) { throw '精灵图与校验报告不一致。' }
 $dist = [System.IO.Path]::GetFullPath((Join-Path $projectRoot 'dist'))
 New-Item -ItemType Directory -Path $dist -Force | Out-Null
@@ -20,12 +27,13 @@ try {
     New-Item -ItemType Directory -Path (Join-Path $stage 'docs\previews') -Force | Out-Null
     foreach ($file in @('hover-six-frames.gif', 'native-waving.gif')) { Copy-Item -LiteralPath (Join-Path $projectRoot ('docs\previews\' + $file)) -Destination (Join-Path $stage 'docs\previews') }
     $nativeZip = Join-Path $dist "feidudu-native-v$version.zip"
-    Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $nativeZip -Force
+    if ([System.IO.File]::Exists($nativeZip)) { [System.IO.File]::Delete($nativeZip) }
+    [System.IO.Compression.ZipFile]::CreateFromDirectory($stage, $nativeZip, [System.IO.Compression.CompressionLevel]::Optimal, $false)
     $sourceZip = Join-Path $dist "feidudu-source-v$version.zip"
     & git archive --format=zip --prefix="feidudu-v$version/" --output=$sourceZip HEAD
     if ($LASTEXITCODE -ne 0) { throw '源码归档失败。' }
     $checksums = foreach ($file in @($nativeZip, $sourceZip)) {
-        $hash = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
+        $hash = Get-ReleaseHash $file
         "$hash  $([System.IO.Path]::GetFileName($file))"
     }
     [System.IO.File]::WriteAllLines((Join-Path $dist 'SHA256SUMS.txt'), $checksums, [System.Text.UTF8Encoding]::new($false))
